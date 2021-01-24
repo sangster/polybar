@@ -16,7 +16,11 @@ config_parser::config_parser(const logger& logger, string&& file, string&& bar)
 config::make_type config_parser::parse() {
   m_log.notice("Parsing config file: %s", m_config);
 
-  parse_file(m_config, {});
+  if (m_config == "-") {
+    parse_stdin();
+  } else {
+    parse_file(m_config, {});
+  }
 
   sectionmap_t sections = create_sectionmap();
 
@@ -123,15 +127,19 @@ void config_parser::parse_file(const string& file, file_list path) {
 
   path.push_back(file);
 
-  int line_no = 0;
-
-  string line_str{};
-
   std::ifstream in(file);
 
   if (!in) {
     throw application_error("Failed to open config file " + file + ": " + strerror(errno));
   }
+
+  parse_stream(in, path, file_index);
+}
+
+void config_parser::parse_stream(std::istream& in, file_list path, int file_index) {
+  int line_no = 0;
+
+  string line_str{};
 
   while (std::getline(in, line_str)) {
     line_no++;
@@ -290,6 +298,12 @@ bool config_parser::is_valid_name(const string& name) {
   }
 
   return true;
+}
+
+void config_parser::parse_stdin() {
+  m_log.trace("config_parser: Parsing STDIN");
+  parse_stream(std::cin, { "-" }, 1);
+  m_files.push_back("-");
 }
 
 POLYBAR_NS_END

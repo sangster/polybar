@@ -117,6 +117,15 @@ class config_parser {
   void parse_file(const string& file, file_list path);
 
   /**
+   * \brief Parses the given input stream, extracts key-value pairs and section
+   *        headers and adds them onto the `lines` vector
+   *
+   * This method directly resolves `include-file` directives and checks for
+   * cyclic dependencies
+   */
+  void parse_stream(std::istream& file, file_list path, int file_index);
+
+  /**
    * \brief Parses the given line string to create a line_t struct
    *
    * We use the INI file syntax (https://en.wikipedia.org/wiki/INI_file)
@@ -200,6 +209,15 @@ class config_parser {
    *        in config_parser::m_forbidden_chars
    */
   bool is_valid_name(const string& name);
+
+  /**
+   * \brief Parses standard input, extracts key-value pairs and section
+   *        headers and adds them onto the `lines` vector
+   *
+   * This method directly resolves `include-file` directives and checks for
+   * cyclic dependencies
+   */
+  void parse_stdin();
 
   /**
    * \brief Whether or not an xresource manager should be used

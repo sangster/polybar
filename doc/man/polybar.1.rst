@@ -35,6 +35,8 @@ OPTIONS
    |
    | **$XDG_CONFIG_HOME/polybar/config**
    | **$HOME/.config/polybar/config**
+
+   When FILE is -, read standard input.
 .. option:: -r, --reload
 
    Reload the application when the config file has been modified
